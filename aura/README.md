@@ -61,3 +61,37 @@ El orden, la duración en pulsos y el efecto de cada plano están en la lista `G
 `(toma, segundo de inicio, pulsos, efecto[, cita])`, donde el efecto puede ser `suave`, `corte` o `flash`.
 La estructura es: título, presentación (4 pulsos por plano), subida (2), drop (1) y final con las citas lentas.
 Busca una canción del BPM elegido y alinea su primer golpe con el principio del vídeo.
+
+---
+
+# Segundo edit: «Cosmos, del calor a las estrellas»
+
+`videos/aura2/fisica_aura2_120bpm.mp4`: 40 s exactos (80 pulsos a 120 BPM), más rápido que el primero.
+Las piezas sueltas están en `videos/aura2/clips/`.
+
+**Contenido.**
+- **Termodinámica:** distribución de Maxwell–Boltzmann, ciclo de Carnot, entropía de mezcla.
+- **Nanomagnetismo:** precesión LLG del espín, ciclo de histéresis con dominios, red de skyrmiones.
+- **Partículas:** cámara de burbujas con creación de pares, diagrama de Feynman, potencial de Higgs.
+- **Astrofísica:** galaxia espiral con rotación diferencial, agujero negro con disco de acreción, nebulosa,
+  ondas gravitacionales (chirp y fusión), púlsar, ley de Hubble, diagrama HR.
+- **Electricidad y fasores:** descarga ramificada, fasores RLC y resonancia, corriente trifásica.
+- **Mecánica:** giróscopo con precesión y nutación.
+
+**Transiciones nuevas** (`efecto` en `GUION` de `montar2.py`): `barrido` (entra en lateral con desenfoque de movimiento),
+`glitch`, `sacudida`, `invertir` (destello en negativo), `zoom` (entra desde muy cerca y desenfocado), además de
+`flash`, `corte` y `suave`. La opción `{"vel": 1.5}` acelera una toma, y los planos de medio pulso hacen el tartamudeo
+antes del final.
+
+**Citas.**
+- Arthur Eddington, *The Nature of the Physical World* (1928): “The law that entropy always increases holds, I think,
+  the supreme position among the laws of Nature.”
+- Carl Sagan, *Cosmos*, episodio 9 (1980): “The nitrogen in our DNA, the calcium in our teeth, the iron in our blood…
+  were made in the interiors of collapsing stars.”
+
+Cierre: *Per aspera ad astra.*
+
+```bash
+./render_todo2.sh 124                                     # todo, a 124 BPM
+/opt/mvenv/bin/python montar2.py --solo-montaje --bpm 95    # solo re-montar
+```
