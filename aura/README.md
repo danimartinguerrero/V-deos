@@ -130,3 +130,35 @@ Cierre: *Per aspera ad astra.*
 ./render_todo3.sh 128                                    # todo
 /opt/mvenv/bin/python montar3.py --solo-montaje --bpm 140  # solo re-montar
 ```
+
+---
+
+# Cuarto edit: mecánica clásica
+
+`videos/aura4/mecanica_aura_124bpm.mp4`: 40,6 s exactos (84 pulsos a 124 BPM). Piezas sueltas en
+`videos/aura4/clips/` y palabras en `videos/aura4/clips/textos/` (`.mov` transparente y `.mp4` sobre negro).
+
+**Formato.**
+- **Capítulos:** cuatro, con numeral romano en serif y nombre espaciado arriba a la izquierda:
+  I Newton · II Oscilaciones · III Lagrange · Hamilton · IV Gravitación · Caos.
+- **Regla de compases** en el borde derecho, con una marca que baja al ritmo durante todo el vídeo.
+- **Palabras** enormes en serif cursiva con su ecuación debajo, una por capítulo: *inertia*, *resonance*,
+  *symmetry*, *chaos*. Cierre: *everything moves.*
+- **Transiciones mecánicas:** `rebote` (zoom amortiguado, como un muelle), `pendulo` (vaivén horizontal
+  amortiguado), `giro`, `dividir` (las dos mitades encajan), además de `corte`, `flash` y `suave`.
+- **Etalonaje:** tono partido, con sombras frías y luces cálidas.
+
+**Tomas.**
+- **Newton y sólido rígido:** plano inclinado con diagrama de fuerzas, explosión con el centro de masas en parábola,
+  rodadura con cicloide (König), Steiner, conservación del momento angular, Atwood, cohete (Tsiolkovski),
+  cuna de Newton, colisión elástica 2D y transformación de Galileo.
+- **Oscilaciones:** los tres regímenes de amortiguamiento, péndulo de Pohl con curva de resonancia, péndulos
+  acoplados (batidos) y curvas de Lissajous.
+- **Lagrange y Hamilton:** flujo en el espacio de fases del péndulo; el área se conserva (Liouville).
+- **Gravitación y caos:** hodógrafa de Kepler, puntos de Lagrange en el sistema que gira, péndulos dobles que
+  divergen y el fractal de condiciones iniciales del péndulo doble.
+
+```bash
+./render_todo4.sh 124                                    # todo
+/opt/mvenv/bin/python montar4.py --solo-montaje --bpm 128  # solo re-montar
+```
