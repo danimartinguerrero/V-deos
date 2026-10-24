@@ -1,0 +1,1 @@
+Mete aquí tus fotos (.jpg/.png) y vuelve a ejecutar aura/render_todo.sh
