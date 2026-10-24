@@ -95,3 +95,38 @@ Cierre: *Per aspera ad astra.*
 ./render_todo2.sh 124                                     # todo, a 124 BPM
 /opt/mvenv/bin/python montar2.py --solo-montaje --bpm 95    # solo re-montar
 ```
+
+---
+
+# Tercer edit: óptica
+
+`videos/aura3/optica_aura_128bpm.mp4`: 37,5 s exactos (80 pulsos a 128 BPM). Las piezas sueltas están en
+`videos/aura3/clips/`, y los textos en `videos/aura3/clips/textos/` (`.mov` con transparencia y `.mp4` sobre negro).
+
+**Formato distinto:**
+- **Etalonaje anamórfico:** destellos horizontales azulados en las luces intensas.
+- **Visor de cámara:** esquinas de encuadre, ● REC, «4K 60P», código de tiempo y una lectura técnica por plano en
+  monoespaciada. No se nombra ningún fenómeno.
+- **Textos cinéticos:** sans fina en minúsculas, alineados a la izquierda, con una línea espectral debajo.
+  Sustituyen a las citas: *light* · *it always finds the fastest way* · *every color was hiding in the white* ·
+  *a trillionth of a second, frozen* · *everything we know, we know by light*.
+- **Transiciones:** `espectral` (los canales RGB llegan separados y convergen), `estrobo`, `sobreexp`
+  (sobreexposición que se recupera), `estela` (entra desde arriba con desenfoque vertical), además de `zoom`,
+  `flash` y `corte`.
+
+**Tomas:**
+- **Láseres:** en humo (abanico, cruce RGB, rebotes entre espejos), moteado, anillos de Michelson, cavidad láser,
+  mode-locking (de los modos al tren de pulsos) y un pulso ultracorto comprimiéndose (chirp).
+- **Difracción:** Fraunhofer con aberturas que cambian de forma, disco de Airy, doble rendija y Huygens con
+  1, 2 y 5 rendijas.
+- **Rayos:** Snell y reflexión total, guiado en una fibra, lámpara de fibras, principio de Fermat, espejismo y
+  cáustica nefroide.
+- **Color:** prisma giratorio con trazado de rayos real, arcoíris primario y secundario, atardecer de Rayleigh y
+  espectro solar con líneas de Fraunhofer.
+- **Interferencia y polarización:** anillos de Newton, película de jabón, disco holográfico, fotoelasticidad,
+  polarización lineal, circular y elíptica, y ley de Malus.
+
+```bash
+./render_todo3.sh 128                                    # todo
+/opt/mvenv/bin/python montar3.py --solo-montaje --bpm 140  # solo re-montar
+```

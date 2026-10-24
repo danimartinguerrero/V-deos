@@ -146,7 +146,7 @@ def rotulo(texto):
 
 def segmento(ruta, inicio, dur, efecto, texto, salida, grano=8, cita=None):
     # duración exacta: se rellena con el último fotograma y se recorta, para que los cortes caigan en el pulso
-    exacto = f"tpad=stop_mode=clone:stop_duration=3,trim=duration={dur:.4f},setpts=PTS-STARTPTS"
+    exacto = f"tpad=stop_mode=clone:stop_duration=3,trim=end_frame={round(dur * FPS)},setpts=PTS-STARTPTS"
     filtros = [exacto]
     if efecto == "flash":
         filtros += [f"scale=w='{W}*(1+0.14*exp(-t*14))':h=-2:eval=frame", f"crop={W}:{H}",
@@ -186,10 +186,12 @@ def montar(bpm, bruto=None):
             guion[i] = (f.stem, 0.5, guion[i][2], guion[i][3], *guion[i][4:])
     lista = []
     t_acum = 0.0
+    pulsos_acum = 0.0
     for k, (nom, inicio, pulsos, efecto, *extra) in enumerate(guion):
         ruta = CLIPS / f"{nom}.mp4"
         # duración exacta en fotogramas para no acumular deriva respecto al ritmo
-        fin = round((t_acum + pulsos * pulso) * FPS) / FPS
+        pulsos_acum += pulsos
+        fin = round(pulsos_acum * pulso * FPS) / FPS
         dur = fin - t_acum
         t_acum = fin
         inicio = min(inicio, max(duracion(ruta) - dur - 0.05, 0))

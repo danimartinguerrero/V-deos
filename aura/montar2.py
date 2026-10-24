@@ -113,7 +113,7 @@ def entrada(efecto, dur):
 
 
 def segmento(ruta, inicio, dur, efecto, texto, salida, cita=None, vel=1.0, grano=9):
-    exacto = f"setpts=PTS/{vel},fps={FPS},tpad=stop_mode=clone:stop_duration=4,trim=duration={dur:.4f},setpts=PTS-STARTPTS"
+    exacto = f"setpts=PTS/{vel},fps={FPS},tpad=stop_mode=clone:stop_duration=4,trim=end_frame={round(dur * FPS)},setpts=PTS-STARTPTS"
     cadena = ",".join([exacto] + entrada(efecto, dur))
     final = f"noise=c0s={grano}:c0f=t+u,format=yuv420p"
     cod = ["-r", FPS, "-c:v", "libx264", "-crf", 20, "-preset", "medium", "-an", salida]
@@ -125,7 +125,7 @@ def segmento(ruta, inicio, dur, efecto, texto, salida, cita=None, vel=1.0, grano
     if cita:
         grafo = (f"{cadena},split=2[n][m];[m]scale={W//4}:{H//4},gblur=sigma=5,scale={W}:{H}[m2];"
                  "[n][m2]blend=all_mode=normal:all_opacity=0.7,colorlevels=romax=0.42:gomax=0.42:bomax=0.42[b];"
-                 f"[1:v]tpad=stop_mode=clone:stop_duration=3,trim=duration={dur:.4f},setpts=PTS-STARTPTS,format=rgba,scale={W}:{H}[c];"
+                 f"[1:v]tpad=stop_mode=clone:stop_duration=3,trim=end_frame={round(dur * FPS)},setpts=PTS-STARTPTS,format=rgba,scale={W}:{H}[c];"
                  f"[b][c]overlay=0:0,{final}")
         M.ff("-ss", f"{inicio:.3f}", "-i", ruta, "-i", cita, "-filter_complex", grafo, *cod)
         return
@@ -145,10 +145,11 @@ def montar(bpm):
         huecos = [i for i, g in enumerate(guion) if g[2] in (1, 2)][1::3]
         for k, i in enumerate(huecos):
             guion[i] = (fotos[k % len(fotos)].stem, 0.5, *guion[i][2:])
-    lista, t_acum = [], 0.0
+    lista, t_acum, pulsos_acum = [], 0.0, 0.0
     for k, (nom, inicio, pulsos, efecto, op) in enumerate(guion):
         ruta = CLIPS / f"{nom}.mp4"
-        fin = round((t_acum + pulsos * pulso) * FPS) / FPS
+        pulsos_acum += pulsos
+        fin = round(pulsos_acum * pulso * FPS) / FPS
         dur, t_acum = fin - t_acum, fin
         cita = CLIPS / "citas" / f"{op['cita']}.mov" if "cita" in op else None
         seg = tmp / f"{k:03d}.mp4"
