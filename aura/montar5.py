@@ -26,9 +26,9 @@ W, H, FPS = M.W, M.H, M.FPS
 NEGRA = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
 FINA = "/usr/share/fonts/opentype/inter/Inter-Light.otf"
 
-TOMAS = ["Coulomb", "DeltaDirac", "Distribuciones", "GaussSimetrias", "Contorno", "RelievePotencial", "Teoremas",
+TOMAS = ["FlujoGauss", "DivergenciaLocal", "divergencia_mapa", "polarizacion_campo", "Coulomb", "DeltaDirac", "Distribuciones", "GaussSimetrias", "Contorno", "RelievePotencial", "Teoremas",
          "Legendre", "Polarizacion", "Condensadores", "Coeficientes", "Tierra",
-         "dipolo", "cuadrupolo", "iguales", "imagen", "multipolo", "puntas", "faraday", "condensador", "cavidad",
+         "dipolo", "cuadrupolo", "iguales", "imagen", "multipolo", "faraday", "condensador", "cavidad",
          "sistema", "esferas_hilo", "ruptura"]
 
 T1, T2, T3 = "TEMA 1|leyes básicas", "TEMA 2|desarrollo multipolar", "TEMA 3|conductores"
@@ -36,29 +36,31 @@ T1, T2, T3 = "TEMA 1|leyes básicas", "TEMA 2|desarrollo multipolar", "TEMA 3|co
 # (toma, inicio, pulsos, efecto, opciones)  opciones: texto, vel, tema
 GUION = [
     ("dipolo", 0.0, 6, "suave", {"texto": "TarjetaGauss", "tema": T1}),
-    ("Coulomb", 1.0, 2, "descarga", {}), ("DeltaDirac", 2.6, 2, "implosion", {}),
-    ("iguales", 1.5, 2, "chispa", {}), ("Teoremas", 1.6, 2, "polaridad", {}),
-    ("Distribuciones", 1.6, 2, "descarga", {}), ("GaussSimetrias", 1.4, 2, "implosion", {}),
-    ("Contorno", 2.6, 2, "chispa", {}), ("RelievePotencial", 1.2, 2, "polaridad", {}),
-    ("dipolo", 2.6, 1, "descarga", {}), ("iguales", 3.6, 1, "chispa", {}),
+    ("divergencia_mapa", 1.0, 2, "descarga", {}), ("DivergenciaLocal", 2.4, 2, "implosion", {}),
+    ("Coulomb", 1.0, 2, "chispa", {}), ("FlujoGauss", 1.2, 2, "polaridad", {}),
+    ("DeltaDirac", 2.6, 2, "descarga", {}), ("divergencia_mapa", 2.6, 2, "implosion", {}),
+    ("Teoremas", 1.6, 2, "chispa", {}), ("Distribuciones", 1.6, 2, "polaridad", {}),
+    ("GaussSimetrias", 1.4, 2, "descarga", {}), ("Contorno", 2.6, 2, "implosion", {}),
+    ("RelievePotencial", 1.2, 2, "chispa", {}), ("FlujoGauss", 3.0, 1, "descarga", {}),
+    ("divergencia_mapa", 3.8, 1, "polaridad", {}), ("iguales", 3.6, 1, "chispa", {}), ("dipolo", 2.6, 1, "descarga", {}),
     ("multipolo", 0.0, 6, "suave", {"texto": "TarjetaMultipolo", "tema": T2}),
-    ("Legendre", 1.6, 2, "implosion", {}), ("cuadrupolo", 1.4, 2, "descarga", {}),
-    ("Polarizacion", 2.2, 2, "polaridad", {}), ("multipolo", 3.0, 1, "chispa", {}),
-    ("cuadrupolo", 3.4, 1, "descarga", {}), ("Legendre", 3.8, 1, "polaridad", {}), ("dipolo", 4.0, 1, "chispa", {}),
+    ("polarizacion_campo", 1.4, 2, "implosion", {}), ("Legendre", 1.6, 2, "descarga", {}),
+    ("cuadrupolo", 1.4, 2, "chispa", {}), ("Polarizacion", 2.2, 2, "polaridad", {}),
+    ("polarizacion_campo", 3.4, 2, "descarga", {}), ("multipolo", 3.0, 1, "chispa", {}),
+    ("Legendre", 3.8, 1, "polaridad", {}), ("cuadrupolo", 3.4, 1, "descarga", {}), ("dipolo", 4.0, 1, "chispa", {}),
     ("faraday", 0.3, 6, "suave", {"texto": "TarjetaConductor", "tema": T3}),
-    ("puntas", 1.4, 2, "descarga", {}), ("esferas_hilo", 1.4, 2, "implosion", {}),
-    ("cavidad", 1.0, 2, "chispa", {}), ("imagen", 1.6, 2, "polaridad", {}),
-    ("condensador", 0.8, 2, "descarga", {}), ("Condensadores", 3.0, 2, "implosion", {}),
-    ("sistema", 1.0, 2, "chispa", {}), ("Coeficientes", 2.6, 2, "polaridad", {}),
-    ("Tierra", 2.4, 2, "descarga", {}),
+    ("esferas_hilo", 1.4, 2, "implosion", {}), ("cavidad", 1.0, 2, "chispa", {}),
+    ("imagen", 1.6, 2, "polaridad", {}), ("condensador", 0.8, 2, "descarga", {}),
+    ("Condensadores", 3.0, 2, "implosion", {}), ("sistema", 1.0, 2, "chispa", {}),
+    ("Coeficientes", 2.6, 2, "polaridad", {}), ("Tierra", 2.4, 2, "descarga", {}),
     ("ruptura", 0.4, 4, "corte", {}),
-    ("faraday", 2.6, 1, "descarga", {}), ("puntas", 3.0, 1, "chispa", {}), ("cavidad", 3.0, 1, "polaridad", {}),
-    ("sistema", 3.0, 1, "descarga", {}), ("condensador", 3.4, 1, "implosion", {}), ("dipolo", 3.4, 1, "chispa", {}),
+    ("faraday", 2.6, 1, "descarga", {}), ("divergencia_mapa", 4.0, 1, "chispa", {}), ("cavidad", 3.0, 1, "polaridad", {}),
+    ("sistema", 3.0, 1, "descarga", {}), ("polarizacion_campo", 4.2, 1, "implosion", {}), ("dipolo", 3.4, 1, "chispa", {}),
     ("multipolo", 4.0, 1, "descarga", {}), ("ruptura", 3.8, 1, "polaridad", {}),
     ("ruptura", 3.9, 0.5, "descarga", {}), ("faraday", 3.6, 0.5, "chispa", {}),
     ("ruptura", 4.0, 0.5, "descarga", {}), ("cavidad", 4.0, 0.5, "chispa", {}),
-    ("ruptura", 4.1, 0.5, "descarga", {}), ("sistema", 4.0, 0.5, "polaridad", {}),
-    ("ruptura", 4.2, 0.5, "descarga", {}), ("puntas", 4.0, 0.5, "chispa", {}),
+    ("ruptura", 4.1, 0.5, "descarga", {}), ("divergencia_mapa", 4.4, 0.5, "polaridad", {}),
+    ("ruptura", 4.2, 0.5, "descarga", {}), ("esferas_hilo", 4.0, 0.5, "chispa", {}),
     ("sistema", 0.3, 9, "suave", {"texto": "TarjetaFinal", "vel": 0.8}),
 ]
 

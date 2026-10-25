@@ -233,6 +233,87 @@ class Teoremas(Toma):
         self.play(MoveAlongPath(punto, curva), FadeIn(lab2), run_time=self.duracion - 1.9, rate_func=linear)
 
 
+class FlujoGauss(Toma):
+    """Una superficie cerrada se pasea entre cargas: el flujo saliente es la carga encerrada / ε0."""
+
+    def construct(self):
+        cargas = [(1, np.array([-1.6, 2.6, 0])), (1, np.array([1.4, 1.2, 0])), (-1, np.array([-0.6, -0.4, 0])),
+                  (1, np.array([1.2, -2.0, 0])), (-1, np.array([-1.5, -2.6, 0]))]
+
+        def E(p):
+            v = np.zeros(3)
+            for q, s in cargas:
+                d = p - s
+                v += q * d / (np.linalg.norm(d) ** 3 + 0.03)
+            return v
+
+        for q, s in cargas:
+            self.add(carga(s, q))
+        c = ValueTracker(0.0)
+
+        def centro(u):
+            return np.array([1.6 * np.sin(u * TAU), 2.8 * np.cos(u * TAU * 0.5) - 0.2, 0])
+
+        def escena():
+            p0 = centro(c.get_value())
+            R = 1.15
+            g = VGroup(Circle(radius=R).move_to(p0).set_stroke(ORO, 3).set_fill(ORO, 0.05))
+            Q = 0
+            for q, s in cargas:
+                if np.linalg.norm(s - p0) < R:
+                    Q += q
+            for a in np.linspace(0, TAU, 20, endpoint=False):
+                nrm = np.array([np.cos(a), np.sin(a), 0])
+                p = p0 + nrm * R
+                v = E(p)
+                fn = np.dot(v, nrm)
+                col = MAG if fn > 0 else CIAN
+                L = np.clip(abs(fn) * 0.6, 0.08, 0.7)
+                g.add(flecha(p, p + nrm * L * np.sign(fn), col, 3))
+            g.add(eq(r"\Phi_E=\frac{%+d\,q}{\varepsilon_0}" % Q if Q else r"\Phi_E=0", 54,
+                     MAG if Q > 0 else (CIAN if Q < 0 else MARFIL)).move_to(DOWN * 5.6))
+            return g
+
+        self.add(always_redraw(escena))
+        self.play(c.animate.set_value(1.0), run_time=self.duracion, rate_func=linear)
+
+
+class DivergenciaLocal(Toma):
+    """∇·E como flujo por unidad de volumen: un cubito que se encoge alrededor de un punto."""
+
+    def construct(self):
+        fuente = np.array([0.0, 1.0, 0])
+
+        def E(p):
+            d = p - fuente
+            return 0.9 * d / (np.linalg.norm(d) ** 2 + 0.6) + np.array([0.35, 0.15, 0])
+
+        campo = VGroup()
+        for x in np.linspace(-4, 4, 12):
+            for y in np.linspace(-2.6, 4.8, 15):
+                p = np.array([x, y, 0])
+                v = E(p)
+                campo.add(flecha(p - v * 0.3, p + v * 0.3, interpolate_color(ManimColor(CIAN), ManimColor(MAG), min(np.linalg.norm(v), 1)), 3.5).set_opacity(0.85))
+        self.add(campo)
+        lado = ValueTracker(2.4)
+
+        def caja():
+            l = lado.get_value()
+            g = VGroup(Square(l).move_to(fuente).set_stroke(ORO, 3).set_fill(ORO, 0.06))
+            for nrm in (RIGHT, LEFT, UP, DOWN):
+                for t in (-0.25, 0.25):
+                    p = fuente + nrm * l / 2 + np.array([nrm[1], nrm[0], 0]) * t * l
+                    fn = np.dot(E(p), nrm)
+                    g.add(flecha(p, p + nrm * np.clip(fn, -0.6, 0.6) * 1.2, MAG if fn > 0 else CIAN, 4))
+            return g
+
+        self.add(always_redraw(caja), punto_brillante(fuente, MAG, 0.08))
+        lab = eq(r"\nabla\cdot\mathbf E=\lim_{\Delta V\to0}\frac{1}{\Delta V}\oint\mathbf E\cdot d\mathbf S=\frac{\rho}{\varepsilon_0}", 44)
+        lab.move_to(DOWN * 4.6)
+        self.play(FadeIn(lab, shift=UP * 0.2), run_time=0.6)
+        self.play(lado.animate.set_value(0.45), run_time=self.duracion - 0.6, rate_func=smooth)
+
+
 # ---------------------------------------------------------------------------
 # Tema 2
 # ---------------------------------------------------------------------------
@@ -439,6 +520,6 @@ class TarjetaFinal(_Tarjeta):
     duracion = 4.4
 
 
-TOMAS = ["Coulomb", "DeltaDirac", "Distribuciones", "GaussSimetrias", "Contorno", "RelievePotencial", "Teoremas",
+TOMAS = ["FlujoGauss", "DivergenciaLocal", "Coulomb", "DeltaDirac", "Distribuciones", "GaussSimetrias", "Contorno", "RelievePotencial", "Teoremas",
          "Legendre", "Polarizacion", "Condensadores", "Coeficientes", "Tierra"]
 CITAS = ["TarjetaGauss", "TarjetaMultipolo", "TarjetaConductor", "TarjetaFinal"]

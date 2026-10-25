@@ -167,7 +167,7 @@ Cierre: *Per aspera ad astra.*
 
 # Quinto edit: electrostática (temas 1, 2 y 3)
 
-`videos/aura5/electro_aura_128bpm.mp4`: 41,7 s exactos (89 pulsos a 128 BPM). Piezas sueltas en
+`videos/aura5/electro_aura_128bpm.mp4`: 46,4 s exactos (99 pulsos a 128 BPM). Piezas sueltas en
 `videos/aura5/clips/` y tarjetas en `videos/aura5/clips/textos/` (`.mov` transparente y `.mp4` sobre negro).
 
 **Formato.**
@@ -185,12 +185,15 @@ diferencias finitas (factorización LU reutilizada cuando la geometría no cambi
 grosor constante y las líneas de campo se siembran según el flujo, con pulsos que viajan por ellas.
 
 **Tomas.**
-- **Tema 1:** Coulomb, divergencia de û/R² y delta de Dirac, anillo → disco → plano, Gauss con esfera
+- **Tema 1:** ∇·E = ρ/ε₀ con densidades de carga que se mueven y miles de trazadores que nacen en las fuentes y
+  mueren en los sumideros, divergencia como flujo por unidad de volumen (un cubito que se encoge), una superficie
+  de Gauss que se pasea entre cargas con su flujo, Coulomb, divergencia de û/R² y delta de Dirac, anillo → disco → plano, Gauss con esfera
   uniforme, condiciones de contorno con σ, relieve 3D del potencial, teoremas de Gauss y Stokes, dipolo que
   gira y dos cargas iguales que se acercan.
-- **Tema 2:** desarrollo multipolar visto desde cada vez más lejos, polinomios de Legendre (de monopolo a
+- **Tema 2:** esfera dieléctrica cuyos dipolos se alinean (P no uniforme: ρ_b = −∇·P dentro y σ_b = P·n en la
+  superficie), desarrollo multipolar visto desde cada vez más lejos, polinomios de Legendre (de monopolo a
   octupolo), cuadrupolo y polarización con cargas de polarización.
-- **Tema 3:** efecto de puntas, dos esferas unidas por un hilo, cavidad con carga que se mueve sin cambiar el
+- **Tema 3:** dos esferas unidas por un hilo, cavidad con carga que se mueve sin cambiar el
   campo exterior, jaula de Faraday en un campo que gira, carga frente a un plano a tierra (σ inducida),
   condensador que se carga, los tres condensadores canónicos, sistema de tres conductores con potenciales
   variables, coeficientes de capacidad e influencia, descarga a tierra y ruptura dieléctrica (modelo DBM).

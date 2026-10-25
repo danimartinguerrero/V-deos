@@ -664,10 +664,183 @@ def ruptura(ruta, seg=5.0):
     escribir(ruta, n, f, w * 4, h * 4)
 
 
+# ---------------------------------------------------------------------------
+# campos vectoriales: partículas trazadoras que dejan estela
+# ---------------------------------------------------------------------------
+def _splat(buf, x0, y0, x1, y1, peso, w, h, col=None):
+    for t in (0.0, 0.33, 0.66, 1.0):
+        px = (x0 + (x1 - x0) * t).astype(int)
+        py = (y0 + (y1 - y0) * t).astype(int)
+        ok = (px >= 0) & (px < w) & (py >= 0) & (py < h)
+        if col is None:
+            np.add.at(buf, py[ok] * w + px[ok], peso[ok] if np.ndim(peso) else peso)
+        else:
+            for c in range(3):
+                np.add.at(buf[c], py[ok] * w + px[ok], (peso * col[:, c])[ok])
+
+
+def poisson_fft(rho, ancho):
+    h, w = rho.shape
+    d = ancho / w
+    ky = np.fft.fftfreq(h, d) * TAU
+    kx = np.fft.fftfreq(w, d) * TAU
+    KX, KY = np.meshgrid(kx, ky)
+    k2 = KX ** 2 + KY ** 2
+    k2[0, 0] = 1
+    R = np.fft.fft2(rho - rho.mean())
+    phi_k = R / k2
+    phi_k[0, 0] = 0
+    phi = np.real(np.fft.ifft2(phi_k))
+    Ex = np.real(np.fft.ifft2(-1j * KX * phi_k))
+    Ey = np.real(np.fft.ifft2(-1j * KY * phi_k))
+    return phi, Ex, -Ey          # filas hacia abajo: la componente y física cambia de signo
+
+
+def divergencia_mapa(ruta, seg=5.0):
+    """∇·E = ρ/ε0: manchas de carga (magenta +, cian −) que se mueven; miles de trazadores
+    siguen E y nacen en las fuentes y mueren en los sumideros."""
+    n = int(seg * FPS)
+    A = 4.0
+    w, h = 270, 480
+    X, Y = malla(A, w, h)
+    rng = np.random.default_rng(21)
+    manchas = [(1.0, 0.9, 0.35), (1.0, 0.7, 0.3), (-1.0, 1.0, 0.3), (-1.0, 0.8, 0.38), (0.7, 0.6, 0.25), (-0.7, 0.5, 0.28)]
+    fases = rng.uniform(0, TAU, (len(manchas), 2))
+    N = 9000
+    P = np.c_[rng.uniform(-A / 2, A / 2, N), rng.uniform(-A * 0.9, A * 0.9, N)]
+    vida = rng.uniform(0, 1, N)
+    traza = np.zeros((3, H2 * W2))
+
+    def rho_en(t):
+        r = np.zeros_like(X)
+        cen = []
+        for k, (q, amp, s) in enumerate(manchas):
+            cx = 1.1 * np.sin(0.35 * t + fases[k, 0]) * amp
+            cy = 2.6 * np.sin(0.27 * t + fases[k, 1]) * amp
+            r += q * np.exp(-((X - cx) ** 2 + (Y - cy) ** 2) / (2 * s * s))
+            cen.append((q, cx, cy))
+        return r, cen
+
+    def paso(t, dt=1 / FPS, dibujar=True):
+        nonlocal P, vida
+        rho, cen = rho_en(t)
+        _, Ex, Ey = poisson_fft(rho, A)
+        mag = np.hypot(Ex, Ey) + 1e-9
+        px = P[:, 0] / A * w + w / 2 - 0.5
+        py = -P[:, 1] / A * w + h / 2 - 0.5
+        ex = ndimage.map_coordinates(Ex / np.sqrt(mag), [py, px], order=1, mode="wrap")
+        ey = ndimage.map_coordinates(Ey / np.sqrt(mag), [py, px], order=1, mode="wrap")
+        m = ndimage.map_coordinates(mag, [py, px], order=1, mode="wrap")
+        P2 = P + np.c_[ex, ey] * dt * 1.6
+        vida = vida + dt * 0.5
+        if dibujar:
+            x0 = P[:, 0] / A * W2 + W2 / 2; y0 = -P[:, 1] / A * W2 + H2 / 2
+            x1 = P2[:, 0] / A * W2 + W2 / 2; y1 = -P2[:, 1] / A * W2 + H2 / 2
+            rl = ndimage.map_coordinates(rho, [py, px], order=1, mode="wrap")
+            col = np.where(rl[:, None] > 0.05, np.array([1.0, 0.55, 0.8]), np.where(rl[:, None] < -0.05, np.array([0.45, 0.85, 1.0]), np.array([0.85, 0.9, 1.0])))
+            peso = np.clip(m / np.percentile(m, 90), 0.2, 1.5) * np.sin(np.pi * np.clip(vida, 0, 1)) * 0.5
+            _splat(traza, x0, y0, x1, y1, peso, W2, H2, col)
+        P = P2
+        muertos = (vida > 1) | (np.abs(P[:, 0]) > A / 2) | (np.abs(P[:, 1]) > A * H2 / W2 / 2)
+        k = muertos.sum()
+        if k:
+            # renacen preferentemente en las fuentes (carga positiva)
+            fuentes = [(cx, cy) for q, cx, cy in cen if q > 0]
+            idx = rng.integers(0, len(fuentes), k)
+            nuevos = np.array([fuentes[i] for i in idx]) + rng.normal(0, 0.35, (k, 2))
+            libres = rng.uniform(0, 1, k) < 0.4
+            nuevos[libres] = np.c_[rng.uniform(-A / 2, A / 2, libres.sum()), rng.uniform(-A * 0.9, A * 0.9, libres.sum())]
+            P[muertos] = nuevos
+            vida[muertos] = 0
+        return rho
+
+    for k in range(90):
+        traza *= 0.9
+        paso(k / FPS - 1.5)
+
+    def f(i):
+        nonlocal traza
+        traza *= 0.9
+        rho = paso(i / FPS)
+        rhoU = ndimage.zoom(rho, (H2 / h, W2 / w), order=1)
+        fondo = np.clip(rhoU, 0, None)[..., None] * POS * 0.22 + np.clip(-rhoU, 0, None)[..., None] * NEG * 0.22
+        t = traza.reshape(3, H2, W2).transpose(1, 2, 0)
+        img = fondo + ndimage.gaussian_filter(t, (0.6, 0.6, 0)) * 1.4 + ndimage.gaussian_filter(t, (4, 4, 0)) * 0.6
+        img = 1 - np.exp(-img * 1.3)
+        return img * vineta(W2, H2, 0.35)[..., None]
+
+    escribir(ruta, n, f, W2, H2)
+
+
+def polarizacion_campo(ruta, seg=5.0):
+    """Esfera dieléctrica: los dipolos (flechas) pasan de desordenados a alineados con E0.
+    Se ve ρ_b = −∇·P dentro y σ_b = P·n en la superficie (+ arriba, − abajo)."""
+    n = int(seg * FPS)
+    A = 4.0
+    X, Y = malla(A)
+    R = 1.35
+    r = np.hypot(X, Y)
+    dentro = r < R
+    rng = np.random.default_rng(31)
+    paso_r = 0.27
+    gx, gy = np.meshgrid(np.arange(-R, R + 1e-6, paso_r), np.arange(-R, R + 1e-6, paso_r))
+    sel = np.hypot(gx, gy) < R - 0.08
+    gx, gy = gx[sel], gy[sel]
+    ang0 = rng.uniform(0, TAU, len(gx))
+    N = 3000
+    P_ext = np.c_[rng.uniform(-A / 2, A / 2, N), rng.uniform(-A * 0.9, A * 0.9, N)]
+    traza = np.zeros(H2 * W2)
+
+    def f(i):
+        nonlocal traza, P_ext
+        s = suave(min(i / n * 1.5, 1))
+        mag = 1 - 0.45 * (gx ** 2 + gy ** 2) / R ** 2           # P no uniforme ⇒ ρ_b ≠ 0
+        a = ang0 * (1 - s) + (np.pi / 2) * s
+        px, py = np.cos(a) * mag, np.sin(a) * mag
+        img = np.zeros((H2, W2, 3))
+        # densidades de polarización
+        Pyc = s * (1 - 0.45 * (X ** 2 + Y ** 2) / R ** 2)
+        rho_b = s * 0.9 * Y / R ** 2 * dentro                    # −∂Py/∂y
+        sig = s * np.clip(Y / R, -1, 1) * np.exp(-((r - R) / 0.03) ** 2) * (1 - 0.45)
+        img += np.clip(rho_b, 0, None)[..., None] * POS * 0.5 + np.clip(-rho_b, 0, None)[..., None] * NEG * 0.5
+        img += np.clip(sig, 0, None)[..., None] * POS * 2.2 + np.clip(-sig, 0, None)[..., None] * NEG * 2.2
+        img += (np.exp(-((r - R) / 0.008) ** 2) * 0.25)[..., None]
+        # flechas de los dipolos
+        flechas = np.zeros(H2 * W2)
+        L = 0.105
+        x0, y0 = gx - L * px, gy - L * py
+        x1, y1 = gx + L * px, gy + L * py
+        for t in np.linspace(0, 1, 14):
+            xx = ((x0 + (x1 - x0) * t) / A * W2 + W2 / 2).astype(int)
+            yy = (-(y0 + (y1 - y0) * t) / A * W2 + H2 / 2).astype(int)
+            np.add.at(flechas, yy * W2 + xx, 1.1)
+        cabeza = np.zeros(H2 * W2)
+        xx = (x1 / A * W2 + W2 / 2).astype(int); yy = (-y1 / A * W2 + H2 / 2).astype(int)
+        np.add.at(cabeza, yy * W2 + xx, 1.0)
+        fl = ndimage.gaussian_filter(flechas.reshape(H2, W2), 0.7) + ndimage.gaussian_filter(cabeza.reshape(H2, W2), 1.6) * 6
+        img += fl[..., None] * np.array([0.95, 0.95, 1.0])
+        # campo exterior E0 (hacia arriba) con trazadores, fuera de la esfera
+        traza *= 0.88
+        v = np.c_[np.zeros(N), np.ones(N)] * 1.4 / FPS
+        Q = P_ext + v
+        x0 = P_ext[:, 0] / A * W2 + W2 / 2; y0 = -P_ext[:, 1] / A * W2 + H2 / 2
+        x1 = Q[:, 0] / A * W2 + W2 / 2; y1 = -Q[:, 1] / A * W2 + H2 / 2
+        fuera = np.hypot(P_ext[:, 0], P_ext[:, 1]) > R + 0.05
+        _splat(traza, x0, y0, x1, y1, np.where(fuera, 0.5, 0.0), W2, H2)
+        P_ext = Q
+        P_ext[P_ext[:, 1] > A * 0.9, 1] -= A * 1.8
+        img += ndimage.gaussian_filter(traza.reshape(H2, W2), 0.8)[..., None] * np.array([1.0, 0.8, 0.45]) * 0.8
+        img = 1 - np.exp(-img * 1.3)
+        return img * vineta(W2, H2, 0.35)[..., None]
+
+    escribir(ruta, n, f, W2, H2)
+
+
 TOMAS = {
     "dipolo": dipolo, "cuadrupolo": cuadrupolo, "iguales": iguales, "imagen": imagen, "multipolo": multipolo,
     "puntas": puntas, "faraday": faraday, "condensador": condensador, "cavidad": cavidad, "sistema": sistema,
     "esferas_hilo": esferas_hilo, "ruptura": ruptura,
+    "divergencia_mapa": divergencia_mapa, "polarizacion_campo": polarizacion_campo,
 }
 
 if __name__ == "__main__":
