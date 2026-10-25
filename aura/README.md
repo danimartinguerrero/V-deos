@@ -172,8 +172,8 @@ Cierre: *Per aspera ad astra.*
 
 **Formato.**
 - **Etalonaje frío con halación:** las luces intensas sangran un halo rojizo, como en película.
-- **Voltímetro** en el borde izquierdo: una barra segmentada (cian, ámbar y magenta) que se dispara en cada
-  pulso y decae.
+- **Medidor de pulso:** pequeño y horizontal, arriba a la izquierda (8 segmentos cian, ámbar y magenta) que
+  se dispara en cada golpe y decae.
 - **Etiqueta de tema** arriba a la derecha: TEMA 1 · leyes básicas, TEMA 2 · desarrollo multipolar,
   TEMA 3 · conductores.
 - **Tarjetas-ecuación** que se encienden parpadeando como un tubo fluorescente: ∇·E = ρ/ε₀, el desarrollo

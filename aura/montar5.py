@@ -2,7 +2,7 @@
 
 Formato propio:
   - etalonaje frío con halación (las luces intensas sangran un halo rojizo, como en película) y bloom;
-  - «voltímetro» en el borde izquierdo: una barra segmentada que se dispara en cada pulso y decae;
+  - un pequeño medidor horizontal arriba a la izquierda que se dispara en cada pulso y decae;
   - etiqueta de tema arriba a la derecha (TEMA 1 · leyes básicas, TEMA 2 · desarrollo multipolar,
     TEMA 3 · conductores);
   - tarjetas-ecuación que se encienden parpadeando como un tubo fluorescente;
@@ -95,16 +95,16 @@ def entrada(efecto, dur):
 
 
 def capas(tema, t0, pulso, sin_tema):
-    """Voltímetro de pulso a la izquierda y etiqueta de tema arriba a la derecha."""
+    """Medidor de pulso pequeño arriba a la izquierda y etiqueta de tema arriba a la derecha."""
     f = []
-    n, x, y0, alto = 14, 58, 560, 800
-    hseg = alto // n
+    # medidor pequeño y discreto, horizontal, arriba a la izquierda (8 segmentos)
+    n, x0, y, ancho, alto = 8, 80, 152, 12, 5
     nivel = f"exp(-mod({t0:.4f}+t\\,{pulso:.5f})/{pulso * 0.45:.4f})"
     for j in range(n):
-        y = y0 + alto - (j + 1) * hseg
-        color = "0x40C8FF" if j < n * 0.6 else ("0xFFC266" if j < n * 0.85 else "0xFF5CA0")
-        f.append(f"drawbox=x={x}:y={y}:w=22:h={hseg - 6}:color=white@0.10:t=fill")
-        f.append(f"drawbox=x={x}:y={y}:w=22:h={hseg - 6}:color={color}@0.9:t=fill:enable='gt({nivel}\\,{(j + 0.5) / n:.3f})'")
+        x = x0 + j * (ancho + 4)
+        color = "0x40C8FF" if j < 5 else ("0xFFC266" if j < 7 else "0xFF5CA0")
+        f.append(f"drawbox=x={x}:y={y}:w={ancho}:h={alto}:color=white@0.12:t=fill")
+        f.append(f"drawbox=x={x}:y={y}:w={ancho}:h={alto}:color={color}@0.75:t=fill:enable='gt({nivel}\\,{(j + 0.5) / n:.3f})'")
     if tema and not sin_tema:
         cab, sub = tema.split("|")
         cab = "  ".join(cab)
