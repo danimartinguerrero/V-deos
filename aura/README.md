@@ -162,3 +162,40 @@ Cierre: *Per aspera ad astra.*
 ./render_todo4.sh 124                                    # todo
 /opt/mvenv/bin/python montar4.py --solo-montaje --bpm 128  # solo re-montar
 ```
+
+---
+
+# Quinto edit: electrostática (temas 1, 2 y 3)
+
+`videos/aura5/electro_aura_128bpm.mp4`: 41,7 s exactos (89 pulsos a 128 BPM). Piezas sueltas en
+`videos/aura5/clips/` y tarjetas en `videos/aura5/clips/textos/` (`.mov` transparente y `.mp4` sobre negro).
+
+**Formato.**
+- **Etalonaje frío con halación:** las luces intensas sangran un halo rojizo, como en película.
+- **Voltímetro** en el borde izquierdo: una barra segmentada (cian, ámbar y magenta) que se dispara en cada
+  pulso y decae.
+- **Etiqueta de tema** arriba a la derecha: TEMA 1 · leyes básicas, TEMA 2 · desarrollo multipolar,
+  TEMA 3 · conductores.
+- **Tarjetas-ecuación** que se encienden parpadeando como un tubo fluorescente: ∇·E = ρ/ε₀, el desarrollo
+  multipolar y E_int = 0. Cierre: ∮E·dS = Q/ε₀ y *every field line begins and ends on a charge.*
+- **Transiciones eléctricas:** `descarga`, `chispa`, `polaridad` e `implosion`.
+
+**Motor de campos (`numerico5.py`).** Cargas puntuales analíticas o conductores resueltos con Laplace en
+diferencias finitas (factorización LU reutilizada cuando la geometría no cambia). Las equipotenciales tienen
+grosor constante y las líneas de campo se siembran según el flujo, con pulsos que viajan por ellas.
+
+**Tomas.**
+- **Tema 1:** Coulomb, divergencia de û/R² y delta de Dirac, anillo → disco → plano, Gauss con esfera
+  uniforme, condiciones de contorno con σ, relieve 3D del potencial, teoremas de Gauss y Stokes, dipolo que
+  gira y dos cargas iguales que se acercan.
+- **Tema 2:** desarrollo multipolar visto desde cada vez más lejos, polinomios de Legendre (de monopolo a
+  octupolo), cuadrupolo y polarización con cargas de polarización.
+- **Tema 3:** efecto de puntas, dos esferas unidas por un hilo, cavidad con carga que se mueve sin cambiar el
+  campo exterior, jaula de Faraday en un campo que gira, carga frente a un plano a tierra (σ inducida),
+  condensador que se carga, los tres condensadores canónicos, sistema de tres conductores con potenciales
+  variables, coeficientes de capacidad e influencia, descarga a tierra y ruptura dieléctrica (modelo DBM).
+
+```bash
+./render_todo5.sh 128                                    # todo
+/opt/mvenv/bin/python montar5.py --solo-montaje --bpm 120  # solo re-montar
+```
